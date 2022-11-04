@@ -1,0 +1,74 @@
+{
+  "id": "com.lite_xl.LiteXL",
+  "runtime": "org.freedesktop.Platform",
+  "runtime-version": "22.08",
+  "sdk": "org.freedesktop.Sdk",
+  "command": "lite-xl",
+  "rename-icon": "lite-xl",
+  "rename-appdata-file": "org.lite_xl.lite_xl.appdata.xml",
+  "rename-desktop-file": "org.lite_xl.lite_xl.desktop",
+  "finish-args": [
+    "--share=ipc",
+    "--socket=x11",
+    "--filesystem=home",
+    "--device=dri"
+  ],
+  "cleanup": [
+    "/include",
+    "/lib",
+    "*.a"
+  ],
+  "modules": [
+    {
+      "name": "lite-xl",
+      "config-opts": [
+        "--force-fallback-for=lua"
+      ],
+      "buildsystem": "meson",
+      "post-install": [
+        "install -Dm 644 ../LICENSE -t $FLATPAK_DEST/share/licenses/$FLATPAK_ID",
+        "install -Dm 644 ../lite-xl-colors/colors/*.lua -t $FLATPAK_DEST/share/lite-xl/colors"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/lite-xl/lite-xl.git",
+          "tag": "v2.1.0",
+          "commit": "9951e785b65d331a9b3b0868add620b57cc81952"
+        },
+        {
+          "type": "git",
+          "url": "https://github.com/lite-xl/lite-xl-colors.git",
+          "dest": "lite-xl-colors",
+          "branch": "master",
+          "commit": "b2451583149151575aafbceb04845bc0249ad7ab"
+        },
+        {
+          "type": "archive",
+          "dest": "subprojects/lua-5.4.4",
+          "url": "https://www.lua.org/ftp/lua-5.4.4.tar.gz",
+          "sha256": "164c7849653b80ae67bec4b7473b884bf5cc8d2dca05653475ec2ed27b9ebf61"
+        },
+        {
+          "type": "file",
+          "dest": "subprojects",
+          "url": "https://wrapdb.mesonbuild.com/v2/lua_5.4.4-1/get_patch",
+          "dest-filename": "lua_5.4.4-1_patch.zip",
+          "sha256": "e61cd965c629d6543176f41a9f1cb9050edfd1566cf00ce768ff211086e40bdc"
+        },
+        {
+          "type": "shell",
+          "commands": [
+            "cd subprojects; for file in *_patch.zip; do unzip $file; done"
+          ]
+        },
+        {
+          "type": "shell",
+          "commands": [
+            "sed -i 's/org.lite_xl.lite_xl/com.lite_xl.LiteXL/g' resources/linux/org.lite_xl.lite_xl.appdata.xml"
+          ]
+        }
+      ]
+    }
+  ]
+}
